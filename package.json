@@ -1,0 +1,11 @@
+{
+  "name": "doge_eat_doge",
+  "version": "1.0.0",
+  "description": "Small realtime multiplayer game, where you try to eat other player and not get eaten",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
