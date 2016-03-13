@@ -1,25 +1,61 @@
 $(document).ready(function() {
    
-    var Game = (function() {
+    var Setup = (function() {
+        
+        //Get the client name
+        
+        //Load current players in the game
+        $.ajax(
+        {
+            method: "GET",
+            url: "player_list"
+        }).done(function(playerData) {
+           
+            var playerList = {};
+            
+            //json to object in the list
+            $.each(JSON.parse(playerData), function(i, p) {
+                 var player = new Player();
+                 player.x = p.x;
+                 player.y = p.y;
+                 player.setName(p.name);
+                 player.setWidth(p.width);
+                 player.setHeight(p.height);
+
+                 playerList[p.name] = player;
+            });
+            
+            Game(playerList);
+        });
+        
+    })();
+    
+    
+    var Game = function(playerList) {
         
         var canvas = $("#game_canvas")[0];
         var context = canvas.getContext('2d');
         var CANVAS_WIDTH = 1100;
         var CANVAS_HEIGHT = 500;
         
-        var playerList = {};
+       // var playerList = {};
         
-        var currPlayer = new Player(context); 
+        var currPlayer = new Player(); 
         currPlayer.setName(Math.random().toString()); //just for testing giving random names
+        currPlayer.setX((Math.random()%200)*100);
+        currPlayer.setY((Math.random()%200)*100);
+        
         
         var socket = io.connect('http://localhost:6969');
         
-        socket.emit('player_entered', currPlayer.toJson());
+        //emit that we entered the game to other players
+         socket.emit('player_entered', currPlayer.toJson());
         
+         //is called when another player has just joined the game
          socket.on("player_entered", function(p) {
-             var player = new Player(context);
-             player.setX(p.x);
-             player.setY(p.y);
+             var player = new Player();
+             player.x = p.x;
+             player.y = p.y;
              player.setName(p.name);
              player.setWidth(p.width);
              player.setHeight(p.height);
@@ -57,15 +93,15 @@ $(document).ready(function() {
             
             //draw each player in the game
             $.each(playerList, function(i, p) {
-                p.draw();
+                p.draw(context);
             });
            
         }
         
         //listen for mouse move event to move our player to that position
         canvas.addEventListener("mousemove", function(e) {
-            currPlayer.setX(getMousePos(canvas, e).x);
-            currPlayer.setY(getMousePos(canvas, e).y);
+            currPlayer.x = getMousePos(canvas, e).x;
+            currPlayer.y = getMousePos(canvas, e).y;
             
             updatePlayerPos(currPlayer.x, currPlayer.y);
             
@@ -86,5 +122,5 @@ $(document).ready(function() {
               y: evt.clientY - rect.top
             };
       }
-    })();
+    };
 });
