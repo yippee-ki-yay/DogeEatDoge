@@ -8,8 +8,10 @@ var io = require('socket.io')(server);
 
 var currPlayers = {};
 
-server.listen(80, function() {
-    console.log("Server has been started and is listening on port 80");
+var port = process.env.PORT || 6969;
+
+server.listen(port, function() {
+    console.log("Server has been started and is listening ");
 });
 
 app.use('/public', express.static(__dirname + '/public'));
