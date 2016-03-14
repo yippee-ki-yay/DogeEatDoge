@@ -8,8 +8,8 @@ var io = require('socket.io')(server);
 
 var currPlayers = {};
 
-server.listen(6969, function() {
-    console.log("Server has been started and is listening on port 6969");
+server.listen(80, function() {
+    console.log("Server has been started and is listening on port 80");
 });
 
 app.use('/public', express.static(__dirname + '/public'));
@@ -39,7 +39,8 @@ io.on('connection', function(socket) {
     
     //we get the player's changed pos and we tell all the other players about it
     socket.on('player_move', function(p) {
-        socket.broadcast.emit(p);
+        socket.broadcast.emit('player_move', p);
+       // console.log("Player name: " + p.name + " x: " + p.x + " y: " + p.y);
     });
  
 });

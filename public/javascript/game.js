@@ -2,50 +2,67 @@ $(document).ready(function() {
    
     var Setup = (function() {
         
-        //Get the client name
-        
-        //Load current players in the game
-        $.ajax(
-        {
-            method: "GET",
-            url: "player_list"
-        }).done(function(playerData) {
-           
-            var playerList = {};
-            
-            //json to object in the list
-            $.each(JSON.parse(playerData), function(i, p) {
-                 var player = new Player();
-                 player.x = p.x;
-                 player.y = p.y;
-                 player.setName(p.name);
-                 player.setWidth(p.width);
-                 player.setHeight(p.height);
-
-                 playerList[p.name] = player;
-            });
-            
-            Game(playerList);
+        //set modal unclosable
+        $('#login_modal').modal({
+          backdrop: 'static',
+          keyboard: false
         });
+        
+        //Open the login modal
+        $("#login_modal").modal('show');
+              
+        $("#submit_nickname").click(function() {
+           var nickname = $("#nickname").val();
+            
+           if(nickname !== '' || nickname === undefined) {
+               $("#login_modal").modal('hide');
+               startGame(nickname);    
+            }
+            
+        });
+        
+        
+        function startGame(nickname) {
+            //Load current players in the game
+            $.ajax(
+            {
+                method: "GET",
+                url: "player_list"
+            }).done(function(playerData) {
+
+                var playerList = {};
+
+                //json to object in the list
+                $.each(JSON.parse(playerData), function(i, p) {
+                     var player = new Player();
+                     player.x = p.x;
+                     player.y = p.y;
+                     player.name = p.name;
+                     player.width = p.width;
+                     player.height = p.height;
+
+                     playerList[p.name] = player;
+                });
+
+                Game(playerList, nickname);
+            });
+        }      
         
     })();
     
     
-    var Game = function(playerList) {
+    var Game = function(playerList, nickname) {
         
         var canvas = $("#game_canvas")[0];
         var context = canvas.getContext('2d');
         var CANVAS_WIDTH = 1100;
         var CANVAS_HEIGHT = 500;
         
-       // var playerList = {};
         
         var currPlayer = new Player(); 
-        currPlayer.setName(Math.random().toString()); //just for testing giving random names
-        currPlayer.setX((Math.random()%200)*100);
-        currPlayer.setY((Math.random()%200)*100);
-        
-        
+  
+        currPlayer.name = nickname;
+                
         var socket = io.connect('http://localhost:6969');
         
         //emit that we entered the game to other players
@@ -56,15 +73,18 @@ $(document).ready(function() {
              var player = new Player();
              player.x = p.x;
              player.y = p.y;
-             player.setName(p.name);
-             player.setWidth(p.width);
-             player.setHeight(p.height);
+             player.name = p.name;
+             player.width = p.width;
+             player.height = p.height;
              
              playerList[p.name] = player;
         });
         
-        socket.on("player_move", function() {
+        socket.on("player_move", function(p) {
+            var playerPos = p;
             
+            playerList[p.name].x = p.x;
+            playerList[p.name].y = p.y;
         });
         
         
@@ -110,7 +130,7 @@ $(document).ready(function() {
         
         function updatePlayerPos(x, y)
         {
-         //   socket.emit('player_pos', {name: currPlayer.name, x: x, y: y});
+            socket.emit('player_move', {name: currPlayer.name, x: x, y: y});
         }
     
         //helper function to extract mouse pos from canvas    

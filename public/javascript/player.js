@@ -19,25 +19,5 @@ var Player = function() {
         context.fillStyle = "#00A";
         context.fillRect(this.x, this.y, 50, 50);
     }
-    
-    Player.prototype.setX = function(x) {
-        Player.prototype.x = x;
-    }
-    
-     Player.prototype.setY = function(y) {
-        Player.prototype.y = y;
-    }
-    
-      Player.prototype.setName = function(name) {
-        Player.prototype.name = name;
-    }
-    
-      Player.prototype.setWidth = function(width) {
-        Player.prototype.width = width;
-    }
-    
-      Player.prototype.setHeight = function(height) {
-        Player.prototype.height = height;
-    }
 
 };
