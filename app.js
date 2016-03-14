@@ -44,5 +44,9 @@ io.on('connection', function(socket) {
         socket.broadcast.emit('player_move', p);
        // console.log("Player name: " + p.name + " x: " + p.x + " y: " + p.y);
     });
+    
+    socket.on('player_grow', function(p) {
+        socket.broadcast.emit('player_grow', p);
+    });
  
 });
