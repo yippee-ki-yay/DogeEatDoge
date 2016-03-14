@@ -63,7 +63,7 @@ $(document).ready(function() {
   
         currPlayer.name = nickname;
                 
-        var socket = io.connect('http://localhost:6969');
+        var socket = io.connect();
         
         //emit that we entered the game to other players
          socket.emit('player_entered', currPlayer.toJson());
